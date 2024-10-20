@@ -13,6 +13,12 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import f1_score
 from collections import Counter
 
+API_KEY = 'AIzaSyA-Y9XSXMfroQnyOgzpfuW6fS0M4vlIrRI'
+
+import google.generativeai as genai
+import os
+
+
 
 class Sentiment:
     NEGATIVE = "Negative"
@@ -62,7 +68,7 @@ yelp_reviews = []
 with open(yelp_file) as y:
     i = 0
     for line in y:
-        if i < 6:
+        if i < 10:
             line_dict = json.loads(line)
             review_text = line_dict["text"]
             yelp_reviews.append(review_text)
@@ -147,7 +153,6 @@ print(f'This is the initial log model accuracy: {clf_log.score(testing_x_vectors
 #yelp_reviews = ['the customer service was not that great given the fact that they served me raw chicken', "wow this restaurant is really favorable", "horrible waste of time"]
 new_test = vectorizer.transform(yelp_reviews)
 print('\n')
-print(yelp_reviews[5])
 sentiment_list = clf_svm.predict(new_test)
 print(f'This is the prediction results for the sample test set: {sentiment_list}')
 
@@ -166,7 +171,16 @@ total_sentiments = len(sentiment_list)
 proportions = {label: count / total_sentiments for label, count in sentiment_counts.items()}
 proportions_list = list(proportions.values())
 keys = ["Negative", "Positive", "Neutral"]
+print(proportions_list)
 
 palette_color = seaborn.color_palette('bright')
 plt.pie(proportions_list, labels=keys, colors=palette_color, autopct='%.0f%%')
-plt.show()
+plt.title("Distribution of Media Sentiment towards Sustainability Topic")
+plt.savefig('/frontend/assets/sentiment_chart.png')
+plt.close()
+
+
+genai.configure(api_key=API_KEY)
+model = genai.GenerativeModel("gemini-1.5-flash")
+response = model.generate_content(f"Here are some of the comments from yelp reviews. Take some of the criticisms/negative comments and offer some points of future improvements. Make the feedback short, 3 improvements one line each. The text that follows are the comments: {yelp_reviews}")
+print(response.text) 

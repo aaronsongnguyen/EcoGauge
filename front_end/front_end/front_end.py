@@ -23,6 +23,19 @@ button_hover_effects = """
     </style>
 """
 
+custom_css = """
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+"""
+
+fruits = [
+    "Apple", "Apricot", "Avocado", "Banana", "Bilberry", "Blackberry", "Blackcurrant",
+    "Blueberry", "Boysenberry", "Currant", "Cherry", "Cherimoya", "Chico fruit",
+    "Cloudberry", "Coconut", "Cranberry", "Cucumber", "Custard apple", "Damson", "Date"
+]
+
 class State(rx.State):
     business_id: str = ""
     show_results: bool = False
@@ -42,7 +55,7 @@ class State(rx.State):
 def header():
     return rx.box(
         rx.hstack(
-            rx.heading("Name", color=colors["accent_green"], font_size="1.5em"),
+            rx.heading("Business Review", color=colors["accent_green"], font_size="1.5em"),
             rx.spacer(),
             width="100%",
             padding="0 1em",
@@ -52,12 +65,29 @@ def header():
         background=colors["accent_blue"],
     )
 
+def scrolling_text():
+    return rx.box(
+        rx.hstack(
+            rx.text(" ".join(fruits + fruits), white_space="nowrap"),
+            rx.text(" ".join(fruits + fruits), white_space="nowrap"),
+            animation="scroll 60s linear infinite",
+            width="fit-content",
+        ),
+        overflow="hidden",
+        width="100%",
+        background="rgba(0, 122, 204, 0.1)",
+        padding="10px 0",
+        position="absolute",
+        bottom="0",
+        left="0",
+    )
+
 def home_page():
     return rx.center(
         rx.vstack(
             rx.text("What can I review for you today?", color=colors["text"], font_size="1.5em", margin_bottom="1em"),
             rx.input(
-                placeholder="Business ID:",
+                placeholder="Enviromental Topic: ",
                 on_change=State.set_business_id,
                 on_key_down=State.handle_key_press,
                 value=State.business_id,
@@ -79,6 +109,7 @@ def home_page():
                 margin_top="1em",
                 class_name="hover-button",
             ),
+            scrolling_text(),
             spacing="1em",
             width="80%",
             max_width="600px",
@@ -86,7 +117,9 @@ def home_page():
             padding="2em",
             background="rgba(255, 255, 255, 0.8)",
             border_radius="1em",
-            margin_top="40px",  # Changed from 80px to 40px
+            margin_top="40px",
+            height="300px",
+            position="relative",
         ),
         height="100vh",
         width="100%",
@@ -99,7 +132,7 @@ def home_page():
 
 def results_page():
     return rx.vstack(
-        rx.text(f"Business: {State.business_id}", color=colors["accent_green"], font_size="1.5em", margin_bottom="1em"),
+        rx.text(f"Enviromental Idea: {State.business_id}", color=colors["accent_green"], font_size="1.5em", margin_bottom="1em"),
         rx.hstack(
             rx.box(
                 rx.text("Results:", color=colors["accent_blue"], font_weight="bold", font_size="1.2em"),
@@ -147,6 +180,7 @@ def results_page():
 def index():
     return rx.box(
         rx.html(button_hover_effects),
+        rx.html(f"<style>{custom_css}</style>"),
         header(),
         rx.cond(
             State.show_results,
