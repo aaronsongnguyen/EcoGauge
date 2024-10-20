@@ -46,10 +46,15 @@ def scrape_threads(url):
         driver.quit()
 
 # URL of the Threads page you want to scrape
-url = "https://www.threads.net/search?q=Lebron&serp_type=default"
+topic = "Input"
+
+topics = topic.split()
+
+if len(topics) == 1:
+    url = f"https://www.threads.net/search?q={topic}&serp_type=default"
+elif len(topics) == 2:
+    url = f"https://www.threads.net/search?q={topics[0]}%20{topics[1]}&serp_type=default"
+
 
 # Scrape the threads
 thread_list = scrape_threads(url)
-
-# Print the scraped threads
-print(len(thread_list))
